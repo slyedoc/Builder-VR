@@ -451,7 +451,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   highlightOnTouch: 0
-  touchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
+  touchHighlightColor:
+    r: 0
+    g: 0
+    b: 0
+    a: 0
   isGrabbable: 1
   holdButtonToGrab: 1
   pauseCollisionsOnGrab: 0

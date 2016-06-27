@@ -2,6 +2,8 @@
 using System.Collections;
 using UnityEngine.SceneManagement;
 
+
+using VRTK;
 public class PhysicsController : MonoBehaviour
 {    
     private LevelManager levelMgr;
@@ -11,8 +13,8 @@ public class PhysicsController : MonoBehaviour
         levelMgr = FindObjectOfType<LevelManager>();
 
 
-        GetComponent<VRTK_ControllerEvents>().ApplicationMenuClicked += new ControllerClickedEventHandler(DoApplicationMenuClicked);
-        GetComponent<VRTK_ControllerEvents>().GripClicked += new ControllerClickedEventHandler(DoGripClicked);
+        GetComponent<VRTK_ControllerEvents>().ApplicationMenuPressed += new ControllerInteractionEventHandler( DoApplicationMenuClicked);
+        GetComponent<VRTK_ControllerEvents>().GripPressed += new ControllerInteractionEventHandler(DoGripClicked);
 
         //GetComponent<VRTK_ControllerEvents>().TriggerAxisChanged += new ControllerClickedEventHandler(DoTriggerAxisChanged);
         //GetComponent<VRTK_ControllerEvents>().TouchpadAxisChanged += new ControllerClickedEventHandler(DoTouchpadAxisChanged);
@@ -22,12 +24,12 @@ public class PhysicsController : MonoBehaviour
         //GetComponent<VRTK_ControllerEvents>().ApplicationMenuClicked += new ControllerClickedEventHandler(DoApplicationMenuClicked);
     }
 
-    void DoApplicationMenuClicked(object sender, ControllerClickedEventArgs e)
+    void DoApplicationMenuClicked(object sender, ControllerInteractionEventArgs e)
     {
         levelMgr.TogglePlaying();
     }
 
-    void DoGripClicked(object sender, ControllerClickedEventArgs e)
+    void DoGripClicked(object sender, ControllerInteractionEventArgs e)
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
