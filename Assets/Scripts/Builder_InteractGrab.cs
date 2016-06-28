@@ -42,9 +42,9 @@ public class Builder_InteractGrab : VRTK_InteractGrab
             var rodClone = Instantiate(rodPrefab);
             rodClone.SetActive(true);
             rodClone.name = "rod clone";
-            rodClone.transform.position = this.transform.position; // new Vector3(-2.36f, 1.2f, 0.635f);
-            rodClone.transform.rotation = this.transform.rotation;
-            rodClone.transform.Rotate(90, 0, 0);
+            rodClone.transform.position = this.transform.position; 
+            rodClone.transform.rotation = this.transform.rotation; //take rotation from controller
+            rodClone.transform.Rotate(90, 0, 0);   //rotate so its inline with controller. 
             rodClone.transform.parent = placedRoot[0].transform;
             
 
