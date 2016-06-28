@@ -2,25 +2,40 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-
+using VRTK;
 
 public class ConnectionManager : MonoBehaviour
 {
     private List<Connector> connections;
+    private VRTK_InteractableObject rod;
 
     public bool EnableSnap { get; set; }
 
     public void Start()
     {
         connections = GetComponentsInChildren<Connector>().ToList();
+        rod  = GetComponentInParent<VRTK_InteractableObject>();
     }
+
+    public void SnapToLastCollider() {
+
+        foreach (var connection in connections)
+        {
+            connection.SnapToLastCollider();
+        }
+    }
+
 
     public void HitConnector(Connector sender, Connector target)
     {
+      
+
         //disable both connectors
         sender.gameObject.SetActive(false);
         target.gameObject.SetActive(false);
         
+
+
         //create connector, and join connectors
         var joint = CreateJoint(target);
         if (joint)

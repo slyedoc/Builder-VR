@@ -6,9 +6,10 @@ using VRTK;
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(Rigidbody))]
 public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 {
-    [Header("Rod Settings", order = 0)]
+    [Header("Rod Settings", order = 10)]
 
-    
+    public  bool IsObjectGrabbed;
+
     public float length = 1;
     public float lengthMax = 10;
     public float lengthMin = 0.2f;
@@ -30,6 +31,7 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
     private Rigidbody rigidBody;
     private ConnectionManager connectionManager;
 
+    public bool isGrabbed = false;
     public bool IsPlaying { get; set;  }
 
     public void Play()
@@ -69,7 +71,7 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public override void Grabbed(GameObject grabbingObject)
     {
-
+        IsObjectGrabbed = true;
         base.Grabbed(grabbingObject);
         rigidBody.constraints = RigidbodyConstraints.None;
         GetComponent<Collider>().enabled = false;
@@ -79,9 +81,11 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public override void Ungrabbed(GameObject grabbingObject)
     {
+        IsObjectGrabbed = false;
         base.Ungrabbed(grabbingObject);
         rigidBody.constraints = RigidbodyConstraints.FreezeAll;
         GetComponent<Collider>().enabled = true;
+        connectionManager.SnapToLastCollider();
         connectionManager.EnableSnap = false;
     }
 

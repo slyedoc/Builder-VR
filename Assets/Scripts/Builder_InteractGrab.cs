@@ -6,12 +6,13 @@ using VRTK;
 
 public class Builder_InteractGrab : VRTK_InteractGrab
 {
+    [Header("Builder Interactions", order = 5)]
     public GameObject rodPrefab;
     
     new void Start()
     {
             base.Start();
-            //if (GetComponent<VRTK_InteractTouch>() == null || GetComponent<VRTK_InteractGrab>() == null)
+            //if (GetComponent<VRTK_InteractTouch>() == null )
             //{
             //    Debug.LogError("BuilderController is required to be attached to a SteamVR Controller that has the VRTK_InteractTouch and VRTK_InteractGrab script attached to it");
             //    return;
@@ -33,18 +34,19 @@ public class Builder_InteractGrab : VRTK_InteractGrab
     {
 
 
-        //SteamVR_TrackedController controller = GetComponent<SteamVR_TrackedController>();
-        
         if (this.GetGrabbedObject() == null)
         {
             
             Debug.LogError("touch pressed");
-
+           var placedRoot =  GameObject.FindGameObjectsWithTag("PlacedRoot");
             var rodClone = Instantiate(rodPrefab);
             rodClone.SetActive(true);
             rodClone.name = "rod clone";
             rodClone.transform.position = this.transform.position; // new Vector3(-2.36f, 1.2f, 0.635f);
-
+            rodClone.transform.rotation = this.transform.rotation;
+            rodClone.transform.Rotate(90, 0, 0);
+            rodClone.transform.parent = placedRoot[0].transform;
+            
 
             this.GrabTrackedObject();
 
@@ -58,47 +60,8 @@ public class Builder_InteractGrab : VRTK_InteractGrab
             }
 
 
-            //this.OnTriggerStay(collider);
-            //this.AttemptGrab();
         }
 
-        //rodClone.Grabbed(controller);
-        //Rigidbody rb = rodClone.GetComponent<Rigidbody>();
-        //rb.AddForce(-Vector3.forward * 2f);
-
-        //SteamVR_TrackedController controller = GetComponent<SteamVR_TrackedController>();
-        //rodClone.transform.parent = rodClone.transform;
-
     }
 
-
-    private bool CanGrab(VRTK_InteractGrab grabbingController)
-    {
-        return (grabbingController && grabbingController.GetGrabbedObject() == null /*&& grabbingController.gameObject.GetComponent<VRTK_ControllerEvents>().grabPressed*/);
-    }
-
-    //void DoTouchpadAxisChanged(object sender, ControllerInteractionEventArgs e)
-    //{
-    //    rcCarScript.SetTouchAxis(e.touchpadAxis);
-    //}
-
-    //void DoTriggerAxisChanged(object sender, ControllerInteractionEventArgs e)
-    //{
-    //    rcCarScript.SetTriggerAxis(e.buttonPressure);
-    //}
-
-    //void DoTouchpadTouchEnd(object sender, ControllerInteractionEventArgs e)
-    //{
-    //    rcCarScript.SetTouchAxis(Vector2.zero);
-    //}
-
-    //void DoTriggerReleased(object sender, ControllerInteractionEventArgs e)
-    //{
-    //    rcCarScript.SetTriggerAxis(0f);
-    //}
-
-    //void DoApplicationMenuPressed(object sender, ControllerInteractionEventArgs e)
-    //{
-    //    rcCarScript.Reset();
-    //}
 }
