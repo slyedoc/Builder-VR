@@ -7,9 +7,7 @@ using VRTK;
 public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 {
     [Header("Rod Settings", order = 10)]
-
-    public  bool IsObjectGrabbed;
-
+    
     public float length = 1;
     public float lengthMax = 10;
     public float lengthMin = 0.2f;
@@ -34,6 +32,19 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
     public bool isGrabbed = false;
     public bool IsPlaying { get; set;  }
 
+    //private Renderer _renderer;
+
+    //public Color AttentionNeeded;
+    //public Color AttentionNone;
+
+
+    protected override void Start()
+    {
+        base.Start();
+       
+
+    }
+
     public void Play()
     {
         rigidBody.constraints = RigidbodyConstraints.None;
@@ -46,6 +57,8 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
         base.Awake();
        
         BuildMesh();
+
+       // _renderer = GetComponent<Renderer>();
 
         rigidBody = GetComponent<Rigidbody>();
         
@@ -71,7 +84,10 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public override void Grabbed(GameObject grabbingObject)
     {
-        IsObjectGrabbed = true;
+        isGrabbed = true;
+
+        //udpate color
+       // _renderer.material.color = Color.Lerp(AttentionNeeded, AttentionNone, 1);
         base.Grabbed(grabbingObject);
         rigidBody.constraints = RigidbodyConstraints.None;
         GetComponent<Collider>().enabled = false;
@@ -81,12 +97,14 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public override void Ungrabbed(GameObject grabbingObject)
     {
-        IsObjectGrabbed = false;
+        isGrabbed = false;
+        //_renderer.material.color = Color.Lerp(AttentionNeeded, AttentionNone, 0);
         base.Ungrabbed(grabbingObject);
         rigidBody.constraints = RigidbodyConstraints.FreezeAll;
         GetComponent<Collider>().enabled = true;
         connectionManager.SnapToLastCollider();
         connectionManager.EnableSnap = false;
+        
     }
 
     private void SetConnectors()

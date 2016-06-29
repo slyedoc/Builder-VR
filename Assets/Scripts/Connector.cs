@@ -24,7 +24,7 @@ public class Connector : MonoBehaviour
         
 
         var rod = this.GetComponentInParent<Rod>();
-        if (rod != null == rod.IsObjectGrabbed ) //don't snap if still grabbed.
+        if (rod != null == rod.IsGrabbed() ) //don't snap if still grabbed.
         {
             var sphere = collider.GetComponent<Connector>();
             var cj = collider.GetComponent<ConnectionJoint>();  

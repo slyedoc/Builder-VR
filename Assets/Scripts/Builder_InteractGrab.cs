@@ -46,18 +46,33 @@ public class Builder_InteractGrab : VRTK_InteractGrab
             rodClone.transform.rotation = this.transform.rotation; //take rotation from controller
             rodClone.transform.Rotate(90, 0, 0);   //rotate so its inline with controller. 
             rodClone.transform.parent = placedRoot[0].transform;
-            
+            var interObj = rodClone.GetComponent<VRTK_InteractableObject>();
+
+
+            var collider = rodClone.GetComponent<Collider>();
+            //if (collider != null)
+            //{
+            //    this.GrabTrackedObjectCollider(collider);
+            //}
+
+            var touch = this.GetComponent<VRTK_InteractTouch>();
+            if (touch != null && collider != null)
+            {
+                touch.OnTriggerStay(collider);
+            }
+
 
             this.GrabTrackedObject();
+
+            //if (interObj != null)
+            //{
+            //    interObj.Grabbed(this.gameObject);
+            //}
 
             //var grable = this.IsObjectGrabbable(rodClone);
 
 
-            var collider = rodClone.GetComponent<Collider>();
-            if (collider != null)
-            {
-                this.GrabTrackedObjectCollider(collider);
-            }
+            
 
 
         }

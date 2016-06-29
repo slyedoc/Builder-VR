@@ -254,11 +254,12 @@ namespace VRTK
         protected virtual void Awake()
         {
             rb = this.GetComponent<Rigidbody>();
+            originalObjectColours = StoreOriginalColors();
         }
 
         protected virtual void Start()
         {
-            originalObjectColours = StoreOriginalColors();
+            
         }
 
         protected virtual void Update()

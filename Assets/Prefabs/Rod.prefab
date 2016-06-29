@@ -78,7 +78,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000012465927764}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -1.619, y: 1.325, z: -1.142}
+  m_LocalPosition: {x: -1.936, y: 1.568, z: 1.987}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4000011305848160}
@@ -246,6 +246,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5830ef5150f731d46b7f2c22590c0386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsConnectionPoint: 0
 --- !u!114 &114000011512593262
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -257,6 +258,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5830ef5150f731d46b7f2c22590c0386, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsConnectionPoint: 0
 --- !u!114 &114000013649043748
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -280,21 +282,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4da47b3b613b54e4da128e7255ddc600, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightOnTouch: 0
-  touchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
+  highlightOnTouch: 1
+  touchHighlightColor: {r: 0.4638841, g: 0.9558824, b: 0.91516525, a: 0}
+  rumbleOnTouch: {x: 0, y: 0}
   isGrabbable: 1
+  isDroppable: 1
   holdButtonToGrab: 0
-  pauseCollisionsOnGrab: 1
+  onGrabCollisionDelay: 0
   grabSnapType: 2
   snapToRotation: {x: 0, y: 0, z: 0}
   snapToPosition: {x: 0, y: 0, z: 0}
+  snapHandle: {fileID: 0}
+  rumbleOnGrab: {x: 0, y: 0}
   grabAttachMechanic: 2
   detachThreshold: 500
   springJointStrength: 50
   springJointDamper: 0
+  throwMultiplier: 1
   isUsable: 0
   holdButtonToUse: 1
   pointerActivatesUseAction: 0
+  rumbleOnUse: {x: 0, y: 0}
   length: 1
   lengthMax: 3
   lengthMin: 0.2
@@ -303,6 +311,7 @@ MonoBehaviour:
   Point1Old: {fileID: 0}
   Point2: {fileID: 1000013653081658}
   Point2Old: {fileID: 0}
+  isGrabbed: 0
 --- !u!114 &114000013813379440
 MonoBehaviour:
   m_ObjectHideFlags: 1
