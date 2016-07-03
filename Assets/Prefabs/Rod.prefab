@@ -282,7 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4da47b3b613b54e4da128e7255ddc600, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  highlightOnTouch: 1
+  highlightOnTouch: 0
   touchHighlightColor: {r: 0.4638841, g: 0.9558824, b: 0.91516525, a: 0}
   rumbleOnTouch: {x: 0, y: 0}
   isGrabbable: 1

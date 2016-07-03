@@ -11,10 +11,10 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
     public float length = 1;
     public float lengthMax = 10;
     public float lengthMin = 0.2f;
-
+    
     public float MassPerUnit = 10;
     private float radius = .05f;
-    private int nbSides = 32;
+    private int nbSides = 64;
     private int nbHeightSeg = 1; // Not implemented yet
     private Mesh mesh = null;
 
@@ -41,8 +41,6 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
     protected override void Start()
     {
         base.Start();
-       
-
     }
 
     public void Play()
