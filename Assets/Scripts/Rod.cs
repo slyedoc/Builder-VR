@@ -1,20 +1,20 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using VRTK;
 
 [RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(Rigidbody))]
 public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 {
-    [Header("Rod Settings", order = 0)]
-
+    [Header("Rod Settings", order = 10)]
     
     public float length = 1;
     public float lengthMax = 10;
     public float lengthMin = 0.2f;
-
+    
     public float MassPerUnit = 10;
     private float radius = .05f;
-    private int nbSides = 32;
+    private int nbSides = 64;
     private int nbHeightSeg = 1; // Not implemented yet
     private Mesh mesh = null;
 
@@ -28,8 +28,20 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     private Rigidbody rigidBody;
     private ConnectionManager connectionManager;
-
+    
+    public bool isGrabbed = false;
     public bool IsPlaying { get; set;  }
+
+    //private Renderer _renderer;
+
+    //public Color AttentionNeeded;
+    //public Color AttentionNone;
+
+
+    protected override void Start()
+    {
+        base.Start();
+    }
 
     public void Play()
     {
@@ -43,6 +55,8 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
         base.Awake();
        
         BuildMesh();
+
+       // _renderer = GetComponent<Renderer>();
 
         rigidBody = GetComponent<Rigidbody>();
         
@@ -68,7 +82,10 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public override void Grabbed(GameObject grabbingObject)
     {
+        isGrabbed = true;
 
+        //udpate color
+       // _renderer.material.color = Color.Lerp(AttentionNeeded, AttentionNone, 1);
         base.Grabbed(grabbingObject);
         rigidBody.constraints = RigidbodyConstraints.None;
         GetComponent<Collider>().enabled = false;
@@ -78,10 +95,14 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public override void Ungrabbed(GameObject grabbingObject)
     {
+        isGrabbed = false;
+        //_renderer.material.color = Color.Lerp(AttentionNeeded, AttentionNone, 0);
         base.Ungrabbed(grabbingObject);
         rigidBody.constraints = RigidbodyConstraints.FreezeAll;
         GetComponent<Collider>().enabled = true;
+        connectionManager.SnapToLastCollider();
         connectionManager.EnableSnap = false;
+        
     }
 
     private void SetConnectors()
@@ -284,7 +305,7 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
         {
             var distance = (Point1.transform.position - Point2.transform.position).magnitude;
             length = Mathf.Clamp(distance, lengthMin, lengthMax);
-            if (  Mathf.Pow(length - oldLength, 2f) > 0.1f)
+            if (length != oldLength)
             {
                 UpdateRod();
                 oldLength = length;
@@ -308,13 +329,27 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public void UpdateRod()
     {
-
+        //update position
         transform.position = (Point1.transform.position + Point2.transform.position) / 2f;
 
+        //update mesh
         BuildMesh();
+
         GetComponent<CapsuleCollider>().height = length;
         GetComponent<Rigidbody>().mass = MassPerUnit * length;
 
+        //update connection joints
+       UpdateConnectionJoint(Point1, new Vector3(0, length / 2, 0));
+       UpdateConnectionJoint(Point2, new Vector3(0, -length / 2, 0));
+
     }
 
+    private void UpdateConnectionJoint(GameObject point, Vector3 connectedAnchor)
+    {
+        var cm = point.GetComponent<ConnectionJoint>();
+        if (cm != null)
+        {
+            cm.UpdateJoint(rigidBody, connectedAnchor);
+        }
+    }
 }

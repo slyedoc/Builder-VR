@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEditor;
+using VRTK;
 
 [RequireComponent(typeof(ConnectionManager), typeof(MeshRenderer), typeof(Rigidbody))]
 public class Wheel : VRTK_InteractableObject, IHasConnection, IPlay

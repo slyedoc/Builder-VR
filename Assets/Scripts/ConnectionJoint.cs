@@ -15,8 +15,7 @@ public class ConnectionJoint : MonoBehaviour, IPlay
     public bool IsPlaying { get; set; }
     public void Start()
     {
-        rb = GetComponent<Rigidbody>();      
-          
+        rb = GetComponent<Rigidbody>();
     }
 
 
@@ -32,7 +31,7 @@ public class ConnectionJoint : MonoBehaviour, IPlay
         //setup joint
         var joint = gameObject.AddComponent<ConfigurableJoint>();
         joint.autoConfigureConnectedAnchor = false;
-        joint.anchor = transform.localPosition;
+        joint.anchor = Vector3.zero;
         joint.connectedBody = targetRigidBoby;
         joint.connectedAnchor = targetConnection.transform.localPosition;
         joint.xMotion = ConfigurableJointMotion.Locked;
@@ -47,6 +46,15 @@ public class ConnectionJoint : MonoBehaviour, IPlay
         //add connection
         connectors.Add(targetConnection);
 
+    }
+
+    public void UpdateJoint(Rigidbody target, Vector3 connectedAnchor)
+    {
+        var j = joints.Where(a => a.connectedBody == target).FirstOrDefault();
+        if( j != null) { 
+           j.connectedAnchor = connectedAnchor;      
+        } 
+        
     }
 
     public void Play()
