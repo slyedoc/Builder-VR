@@ -79,5 +79,4 @@ public class ConnectionManager : MonoBehaviour
         return cj;
     }
 
-
 }

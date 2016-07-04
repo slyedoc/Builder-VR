@@ -28,7 +28,7 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     private Rigidbody rigidBody;
     private ConnectionManager connectionManager;
-
+    
     public bool isGrabbed = false;
     public bool IsPlaying { get; set;  }
 
@@ -305,7 +305,7 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
         {
             var distance = (Point1.transform.position - Point2.transform.position).magnitude;
             length = Mathf.Clamp(distance, lengthMin, lengthMax);
-            if (  Mathf.Pow(length - oldLength, 2f) > 0.1f)
+            if (length != oldLength)
             {
                 UpdateRod();
                 oldLength = length;
@@ -329,13 +329,27 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
 
     public void UpdateRod()
     {
-
+        //update position
         transform.position = (Point1.transform.position + Point2.transform.position) / 2f;
 
+        //update mesh
         BuildMesh();
+
         GetComponent<CapsuleCollider>().height = length;
         GetComponent<Rigidbody>().mass = MassPerUnit * length;
 
+        //update connection joints
+       UpdateConnectionJoint(Point1, new Vector3(0, length / 2, 0));
+       UpdateConnectionJoint(Point2, new Vector3(0, -length / 2, 0));
+
     }
 
+    private void UpdateConnectionJoint(GameObject point, Vector3 connectedAnchor)
+    {
+        var cm = point.GetComponent<ConnectionJoint>();
+        if (cm != null)
+        {
+            cm.UpdateJoint(rigidBody, connectedAnchor);
+        }
+    }
 }

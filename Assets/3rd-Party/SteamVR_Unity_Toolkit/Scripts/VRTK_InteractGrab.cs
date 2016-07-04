@@ -61,7 +61,7 @@ namespace VRTK
                 ReleaseObject((uint)trackedController.index, false);
             }
         }
-
+            
         public void AttemptGrab()
         {
             AttemptGrabObject();
