@@ -7,7 +7,8 @@ using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 using LOG = UnityEngine.Debug;
-#if UNITY_5_3
+
+#if UNITY_5_3 || UNITY_5_4
 using UnityEngine.SceneManagement;
 using UnityEditor.SceneManagement;
 #endif
@@ -112,11 +113,11 @@ public class AutoSave : EditorWindow
 		}
 		saveAfterPlay = false;
 
-		// save untitled scene?
-#if UNITY_5_3
+        // save untitled scene?
+#if UNITY_5_3 || UNITY_5_4
 		string sceneName = SceneManager.GetActiveScene ().name;
 #else
-			string sceneName = EditorApplication.currentScene;
+        string sceneName = EditorApplication.currentScene;
 #endif
 		if ((sceneName == "" || sceneName.StartsWith ("Untitled")) && !AutoSavePreferences.saveUnnamedNewScene) {
 			stw1.Start ();
@@ -127,10 +128,11 @@ public class AutoSave : EditorWindow
 		if (AutoSavePreferences.logSaveEvent) {
 			LOG.Log ("Autosave");
 		}
-#if UNITY_5_3
+#if UNITY_5_3 || UNITY_5_4
 		EditorSceneManager.SaveOpenScenes ();
 #else
-		EditorApplication.SaveScene ();
+        
+        EditorApplication.SaveScene ();
 #endif
 		if (AutoSavePreferences.saveAssets) {
 			EditorApplication.SaveAssets ();

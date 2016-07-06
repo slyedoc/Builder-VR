@@ -52,8 +52,8 @@ GameObject:
   - 114: {fileID: 114000012028244058}
   - 114: {fileID: 114000010516122212}
   - 114: {fileID: 114000010005288108}
-  - 114: {fileID: 114000010189177380}
   - 114: {fileID: 114000010234298308}
+  - 114: {fileID: 114000010190421128}
   - 114: {fileID: 114000012945151998}
   - 114: {fileID: 114000013914219976}
   m_Layer: 2
@@ -500,8 +500,8 @@ GameObject:
   - 114: {fileID: 114000013541606600}
   - 114: {fileID: 114000011591800942}
   - 114: {fileID: 114000010887492484}
-  - 114: {fileID: 114000010738745754}
   - 114: {fileID: 114000010704135806}
+  - 114: {fileID: 114000013787961838}
   - 114: {fileID: 114000010098155776}
   - 114: {fileID: 114000013770951572}
   m_Layer: 2
@@ -1865,7 +1865,7 @@ MeshRenderer:
   m_LightProbeUsage: 0
   m_ReflectionProbeUsage: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10754, guid: 0000000000000000e000000000000000, type: 0}
   m_SubsetIndices: 
   m_StaticBatchRoot: {fileID: 0}
   m_ProbeAnchor: {fileID: 0}
@@ -1956,7 +1956,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d45c8d32f1d960d4498790bb3961fc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &114000010189177380
+--- !u!114 &114000010190421128
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1971,6 +1971,7 @@ MonoBehaviour:
   hideControllerOnGrab: 0
   hideControllerDelay: 0
   grabPrecognition: 0
+  throwMultiplier: 1
   createRigidBodyWhenNotTouching: 0
 --- !u!114 &114000010234298308
 MonoBehaviour:
@@ -1986,6 +1987,7 @@ MonoBehaviour:
   hideControllerOnTouch: 0
   hideControllerDelay: 0
   globalTouchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
+  customRigidbodyObject: {fileID: 0}
 --- !u!114 &114000010283650216
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2087,22 +2089,7 @@ MonoBehaviour:
   hideControllerOnTouch: 0
   hideControllerDelay: 0
   globalTouchHighlightColor: {r: 0, g: 0, b: 0, a: 0}
---- !u!114 &114000010738745754
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000012173269504}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 947b27445602ed640b885db7e667dfc1, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controllerAttachPoint: {fileID: 0}
-  hideControllerOnGrab: 0
-  hideControllerDelay: 0
-  grabPrecognition: 0
-  createRigidBodyWhenNotTouching: 0
+  customRigidbodyObject: {fileID: 0}
 --- !u!114 &114000010740029666
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2284,9 +2271,27 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000012173269504}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c0a34df827c8af48a93a656ecd8697b, type: 3}
+  m_Script: {fileID: 11500000, guid: 824f3ea856c39a1449d18765183c040b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rodPrefab: {fileID: 1000012465927764, guid: e697a0a7fd2c266489659939d53b7e96, type: 2}
+--- !u!114 &114000013787961838
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1000012173269504}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 947b27445602ed640b885db7e667dfc1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controllerAttachPoint: {fileID: 0}
+  hideControllerOnGrab: 0
+  hideControllerDelay: 0
+  grabPrecognition: 0
+  throwMultiplier: 1
+  createRigidBodyWhenNotTouching: 0
 --- !u!114 &114000013914219976
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2295,9 +2300,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1000010015627550}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5c0a34df827c8af48a93a656ecd8697b, type: 3}
+  m_Script: {fileID: 11500000, guid: 824f3ea856c39a1449d18765183c040b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rodPrefab: {fileID: 1000012465927764, guid: e697a0a7fd2c266489659939d53b7e96, type: 2}
 --- !u!114 &114000014101924350
 MonoBehaviour:
   m_ObjectHideFlags: 1

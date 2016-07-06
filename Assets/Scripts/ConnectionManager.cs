@@ -4,64 +4,88 @@ using System.Collections.Generic;
 using System.Linq;
 using VRTK;
 
+
+public delegate void ConnectionManagerEventHandler(object sender);
+
 public class ConnectionManager : MonoBehaviour
 {
-    private List<Connector> connections;
-    private VRTK_InteractableObject rod;
-
+    //Pairing of connection and the joints that replaced them
+    public List<Tuple<Connector, ConnectionJoint>> connections;
     public bool EnableSnap { get; set; }
+
+    public event ConnectionManagerEventHandler ConnectionCreated;
+
+    public virtual void OnConnectionCreated()
+    {
+        if (ConnectionCreated != null)
+            ConnectionCreated(this);
+    }
 
     public void Start()
     {
-        connections = GetComponentsInChildren<Connector>().ToList();
-        rod  = GetComponentInParent<VRTK_InteractableObject>();
-    }
-
-    public void SnapToLastCollider() {
-
-        foreach (var connection in connections)
+        connections = new List<Tuple<Connector, ConnectionJoint>>();
+        foreach (var c in GetComponentsInChildren<Connector>().ToList())
         {
-            connection.SnapToLastCollider();
+            connections.Add( new Tuple<Connector, ConnectionJoint>( c, null));
         }
     }
 
-
     public void HitConnector(Connector sender, Connector target)
     {
-      
 
         //disable both connectors
         sender.gameObject.SetActive(false);
         target.gameObject.SetActive(false);
-        
-
 
         //create connector, and join connectors
         var joint = CreateJoint(target);
-        if (joint)
+        if (joint == null)
         {
-            //place connectors on self
-            IHasConnection hc1 = GetComponent(typeof(IHasConnection)) as IHasConnection;
-            hc1.ReplaceConnection(sender, joint);
-
-            //replace on target
-            IHasConnection hc2 = target.transform.parent.gameObject.GetComponent(typeof(IHasConnection)) as IHasConnection;
-            hc2.ReplaceConnection(target, joint);
-
-            joint.Snap(target);
-            joint.Snap(sender);
+            Debug.LogError("Error creating joint.");
+            return;
         }
 
+        //update pairing with new joint
+        UpdateConnectorPairing(sender, joint);
+            
+        //replace on target
+        ConnectionManager cm2 = target.transform.parent.gameObject.GetComponent<ConnectionManager>();
+        cm2.UpdateConnectorPairing(target, joint);
+
+        joint.Snap(target);
+        joint.Snap(sender);
+
+        OnConnectionCreated();
+        cm2.OnConnectionCreated();
+    }
+
+    private void UpdateConnectorPairing(Connector child, ConnectionJoint target)
+    {
+        var conn = connections.Find(a => a.first == child);
+        if (conn == null)
+        {
+            Debug.LogError("Could not find Connector in list.");
+            return;
+        }
+        conn.second = target;
     }
 
     public void HitJoint(Connector sender, ConnectionJoint joint)
     {
+
         //disable our connector
         sender.gameObject.SetActive(false);
 
+        //update pairing
+        UpdateConnectorPairing(sender, joint);
+
         //snap to our connector
         joint.Snap(sender);
+
+        OnConnectionCreated();
     }
+
+    
 
     private ConnectionJoint CreateJoint(Connector item)
     {

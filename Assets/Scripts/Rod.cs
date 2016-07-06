@@ -1,12 +1,15 @@
 ﻿using UnityEngine;
 using System.Collections;
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 using VRTK;
 
-[RequireComponent(typeof(MeshFilter), typeof(MeshRenderer), typeof(Rigidbody))]
-public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
+
+[ExecuteInEditMode]
+public class Rod : Builder_InteractableObject
 {
-    [Header("Rod Settings", order = 10)]
+    [Header("Rod Settings", order = 5)]
     
     public float length = 1;
     public float lengthMax = 10;
@@ -18,106 +21,33 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
     private int nbHeightSeg = 1; // Not implemented yet
     private Mesh mesh = null;
 
-    private float oldLength;
+    private float oldLength;    
 
-
-    public GameObject Point1;
-    public GameObject Point1Old;
-    public GameObject Point2;
-    public GameObject Point2Old;
-
-    private Rigidbody rigidBody;
-    private ConnectionManager connectionManager;
-    
-    public bool isGrabbed = false;
-    public bool IsPlaying { get; set;  }
-
-    //private Renderer _renderer;
-
-    //public Color AttentionNeeded;
-    //public Color AttentionNone;
-
-
-    protected override void Start()
-    {
-        base.Start();
-    }
-
-    public void Play()
-    {
-        rigidBody.constraints = RigidbodyConstraints.None;
-        rigidBody.useGravity = true;
-        IsPlaying = true;
-    }
-   
     protected override void Awake()
     {
         base.Awake();
-       
         BuildMesh();
-
-       // _renderer = GetComponent<Renderer>();
-
-        rigidBody = GetComponent<Rigidbody>();
-        
-        connectionManager = GetComponent<ConnectionManager>();
+        cm.ConnectionCreated += ConnectionCreated;
     }
 
-    void IHasConnection.ReplaceConnection(Connector child, ConnectionJoint target)
+    private void ConnectionCreated(object sender)
     {
-        if (Point1 == child.gameObject)
-        {
-            Point1Old = Point1;
-            Point1 = target.gameObject;
-        }
-
-        if (Point2 == child.gameObject)
-        {
-            Point2Old = Point2;
-            Point2 = target.gameObject;
-        }
-
-        UpdateRod();
-    }
-
-    public override void Grabbed(GameObject grabbingObject)
-    {
-        isGrabbed = true;
-
-        //udpate color
-       // _renderer.material.color = Color.Lerp(AttentionNeeded, AttentionNone, 1);
-        base.Grabbed(grabbingObject);
-        rigidBody.constraints = RigidbodyConstraints.None;
-        GetComponent<Collider>().enabled = false;
-        connectionManager.EnableSnap = true;
-
-    }
-
-    public override void Ungrabbed(GameObject grabbingObject)
-    {
-        isGrabbed = false;
-        //_renderer.material.color = Color.Lerp(AttentionNeeded, AttentionNone, 0);
-        base.Ungrabbed(grabbingObject);
-        rigidBody.constraints = RigidbodyConstraints.FreezeAll;
-        GetComponent<Collider>().enabled = true;
-        connectionManager.SnapToLastCollider();
-        connectionManager.EnableSnap = false;
-        
-    }
-
-    private void SetConnectors()
-    {
-        Point1.transform.localPosition = new Vector3(0, length / 2, 0);
-        Point2.transform.localPosition = new Vector3(0, -length / 2, 0);
+        Debug.Log("Changing grab type");
+        var go = grabbingObject;
+        if( go )
+            Ungrabbed(grabbingObject);
+        grabAttachMechanic = GrabAttachType.Track_Object;
+        if( go )
+            Grabbed(go);
     }
 
     private void BuildMesh()
-    {
+    {        
         //build mesh
         mesh = new Mesh();
         int nbVerticesCap = nbSides + 1;
 
-        #region Vertices
+#region Vertices
 
         // bottom + top + sides
         Vector3[] vertices = new Vector3[nbVerticesCap + nbVerticesCap + nbSides * nbHeightSeg * 2 + 2];
@@ -154,9 +84,9 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
         }
         vertices[vert] = vertices[nbSides * 2 + 2];
         vertices[vert + 1] = vertices[nbSides * 2 + 3];
-        #endregion
+#endregion
 
-        #region Normales
+#region Normales
 
         // bottom + top + sides
         Vector3[] normales = new Vector3[vertices.Length];
@@ -190,9 +120,9 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
         }
         normales[vert] = normales[nbSides * 2 + 2];
         normales[vert + 1] = normales[nbSides * 2 + 3];
-        #endregion
+#endregion
 
-        #region UVs
+#region UVs
         Vector2[] uvs = new Vector2[vertices.Length];
 
         // Bottom cap
@@ -226,9 +156,9 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
         }
         uvs[u] = new Vector2(1f, 1f);
         uvs[u + 1] = new Vector2(1f, 0f);
-        #endregion
+#endregion
 
-        #region Triangles
+#region Triangles
         int nbTriangles = nbSides + nbSides + nbSides * 2;
         int[] triangles = new int[nbTriangles * 3 + 3];
 
@@ -282,7 +212,7 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
             tri++;
             i += 3;
         }
-        #endregion
+#endregion
 
         mesh.vertices = vertices;
         mesh.normals = normales;
@@ -301,55 +231,35 @@ public class Rod : VRTK_InteractableObject, IHasConnection, IPlay
     {
         base.Update();
 
-        if (IsGrabbed())
-        {
-            var distance = (Point1.transform.position - Point2.transform.position).magnitude;
+        if (IsGrabbed() && cm.connections.Count == 2)
+        {            
+            var distance = (cm.connections[0].first.transform.position - cm.connections[1].first.transform.position).magnitude;
             length = Mathf.Clamp(distance, lengthMin, lengthMax);
             if (length != oldLength)
             {
-                UpdateRod();
+                //update position
+                transform.position = (cm.connections[0].first.transform.position + cm.connections[1].first.transform.position) / 2f;
+
+                //update mesh
+                BuildMesh();
+
+                GetComponent<CapsuleCollider>().height = length;
+                GetComponent<Rigidbody>().mass = MassPerUnit * length;
+
+                //update connection joints
+                UpdateConnectionJoint(cm.connections[0].second, new Vector3(0, length / 2, 0));
+                UpdateConnectionJoint(cm.connections[1].second, new Vector3(0, -length / 2, 0));
+
                 oldLength = length;
             }
         }
-
-        if (!IsPlaying)
-        {
-
-
-            //set position
-            
-            //transform.up = (Point1.transform.position - transform.position);
-        }
-        else
-        {
-
-        }
-
     }
 
-    public void UpdateRod()
+    private void UpdateConnectionJoint(ConnectionJoint joint, Vector3 connectedAnchor)
     {
-        //update position
-        transform.position = (Point1.transform.position + Point2.transform.position) / 2f;
-
-        //update mesh
-        BuildMesh();
-
-        GetComponent<CapsuleCollider>().height = length;
-        GetComponent<Rigidbody>().mass = MassPerUnit * length;
-
-        //update connection joints
-       UpdateConnectionJoint(Point1, new Vector3(0, length / 2, 0));
-       UpdateConnectionJoint(Point2, new Vector3(0, -length / 2, 0));
-
-    }
-
-    private void UpdateConnectionJoint(GameObject point, Vector3 connectedAnchor)
-    {
-        var cm = point.GetComponent<ConnectionJoint>();
-        if (cm != null)
+        if (joint != null)
         {
-            cm.UpdateJoint(rigidBody, connectedAnchor);
+            joint.UpdateJoint(rb, connectedAnchor);
         }
     }
 }

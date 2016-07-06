@@ -14,6 +14,8 @@ namespace VRTK
     using UnityEngine;
     using System.Collections;
 
+    public delegate void TeleportEventHandler(object sender, DestinationMarkerEventArgs e);
+
     public class VRTK_BasicTeleport : MonoBehaviour
     {
         public float blinkTransitionSpeed = 0.6f;
@@ -21,6 +23,10 @@ namespace VRTK
         public float distanceBlinkDelay = 0f;
         public bool headsetPositionCompensation = true;
         public string ignoreTargetWithTagOrClass;
+        public bool limitToNavMesh = false;
+
+        public event TeleportEventHandler Teleporting;
+        public event TeleportEventHandler Teleported;
 
         protected Transform eyeCamera;
         protected bool adjustYForTerrain = false;
@@ -35,27 +41,38 @@ namespace VRTK
         {
             if (markerMaker)
             {
-                var worldMarker = markerMaker.GetComponent<VRTK_DestinationMarker>();
-                if (worldMarker)
+                foreach (var worldMarker in markerMaker.GetComponents<VRTK_DestinationMarker>())
                 {
                     worldMarker.DestinationMarkerSet += new DestinationMarkerEventHandler(DoTeleport);
                     worldMarker.SetInvalidTarget(ignoreTargetWithTagOrClass);
+                    worldMarker.SetNavMeshCheck(limitToNavMesh);
                 }
             }
         }
 
         protected virtual void Start()
         {
-            this.name = "PlayerObject_" + this.name;
+            Utilities.SetPlayerObject(this.gameObject, VRTK_PlayerObject.ObjectTypes.CameraRig);
+
             adjustYForTerrain = false;
             eyeCamera = GameObject.FindObjectOfType<SteamVR_Camera>().GetComponent<Transform>();
 
-            var controllerManager = GameObject.FindObjectOfType<SteamVR_ControllerManager>();
-            InitDestinationSetListener(controllerManager.left);
-            InitDestinationSetListener(controllerManager.right);
+            InitDestinationMarkerListeners();
             InitHeadsetCollisionListener();
 
             enableTeleport = true;
+        }
+
+        protected void OnTeleporting(object sender, DestinationMarkerEventArgs e)
+        {
+            if (Teleporting != null)
+                Teleporting(this, e);
+        }
+
+        protected void OnTeleported(object sender, DestinationMarkerEventArgs e)
+        {
+            if (Teleported != null)
+                Teleported(this, e);
         }
 
         protected virtual void Blink(float transitionSpeed)
@@ -67,17 +84,29 @@ namespace VRTK
 
         protected virtual bool ValidLocation(Transform target)
         {
-            return (target && target.tag != ignoreTargetWithTagOrClass && target.GetComponent(ignoreTargetWithTagOrClass) == null);
+            bool validNavMeshLocation = false;
+            if (target)
+            {
+                NavMeshHit hit;
+                validNavMeshLocation = NavMesh.SamplePosition(target.position, out hit, 1.0f, NavMesh.AllAreas);
+            }
+            if (!limitToNavMesh)
+            {
+                validNavMeshLocation = true;
+            }
+            return (validNavMeshLocation && target && target.tag != ignoreTargetWithTagOrClass && target.GetComponent(ignoreTargetWithTagOrClass) == null);
         }
 
         protected virtual void DoTeleport(object sender, DestinationMarkerEventArgs e)
         {
             if (enableTeleport && ValidLocation(e.target) && e.enableTeleport)
             {
+                OnTeleporting(sender, e);
                 Vector3 newPosition = GetNewPosition(e.destinationPosition, e.target);
                 CalculateBlinkDelay(blinkTransitionSpeed, newPosition);
                 Blink(blinkTransitionSpeed);
                 SetNewPosition(newPosition, e.target);
+                OnTeleported(sender, e);
             }
         }
 
@@ -119,6 +148,21 @@ namespace VRTK
         {
             SteamVR_Fade.Start(Color.clear, fadeInTime);
             fadeInTime = 0f;
+        }
+
+        private void InitDestinationMarkerListeners()
+        {
+            var controllerManager = GameObject.FindObjectOfType<SteamVR_ControllerManager>();
+            InitDestinationSetListener(controllerManager.left);
+            InitDestinationSetListener(controllerManager.right);
+
+            foreach (var destinationMarker in GameObject.FindObjectsOfType<VRTK_DestinationMarker>())
+            {
+                if (destinationMarker.gameObject != controllerManager.left && destinationMarker.gameObject != controllerManager.right)
+                {
+                    InitDestinationSetListener(destinationMarker.gameObject);
+                }
+            }
         }
 
         private void InitHeadsetCollisionListener()

@@ -22,6 +22,7 @@ namespace VRTK
         public float pointerThickness = 0.002f;
         public float pointerLength = 100f;
         public bool showPointerTip = true;
+        public LayerMask layersToIgnore = Physics.IgnoreRaycastLayer;
 
         private GameObject pointerHolder;
         private GameObject pointer;
@@ -42,20 +43,22 @@ namespace VRTK
             {
                 Ray pointerRaycast = new Ray(transform.position, transform.forward);
                 RaycastHit pointerCollidedWith;
-                bool rayHit = Physics.Raycast(pointerRaycast, out pointerCollidedWith);
-                float pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
+                var rayHit = Physics.Raycast(pointerRaycast, out pointerCollidedWith, pointerLength, ~layersToIgnore);
+                var pointerBeamLength = GetPointerBeamLength(rayHit, pointerCollidedWith);
                 SetPointerTransform(pointerBeamLength, pointerThickness);
             }
         }
 
         protected override void InitPointer()
         {
-            pointerHolder = new GameObject(string.Format("[{0}]PlayerObject_WorldPointer_SimplePointer_Holder", this.gameObject.name));
+            pointerHolder = new GameObject(string.Format("[{0}]WorldPointer_SimplePointer_Holder", this.gameObject.name));
+            Utilities.SetPlayerObject(pointerHolder, VRTK_PlayerObject.ObjectTypes.Pointer);
             pointerHolder.transform.parent = this.transform;
             pointerHolder.transform.localPosition = Vector3.zero;
 
             pointer = GameObject.CreatePrimitive(PrimitiveType.Cube);
-            pointer.transform.name = string.Format("[{0}]PlayerObject_WorldPointer_SimplePointer_Pointer", this.gameObject.name);
+            pointer.transform.name = string.Format("[{0}]WorldPointer_SimplePointer_Pointer", this.gameObject.name);
+            Utilities.SetPlayerObject(pointer, VRTK_PlayerObject.ObjectTypes.Pointer);
             pointer.transform.parent = pointerHolder.transform;
 
             pointer.GetComponent<BoxCollider>().isTrigger = true;
@@ -63,7 +66,8 @@ namespace VRTK
             pointer.layer = 2;
 
             pointerTip = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-            pointerTip.transform.name = string.Format("[{0}]PlayerObject_WorldPointer_SimplePointer_PointerTip", this.gameObject.name);
+            pointerTip.transform.name = string.Format("[{0}]WorldPointer_SimplePointer_PointerTip", this.gameObject.name);
+            Utilities.SetPlayerObject(pointerTip, VRTK_PlayerObject.ObjectTypes.Pointer);
             pointerTip.transform.parent = pointerHolder.transform;
             pointerTip.transform.localScale = pointerTipScale;
 
@@ -77,21 +81,35 @@ namespace VRTK
             TogglePointer(false);
         }
 
+        protected override void OnDestroy()
+        {
+            base.OnDestroy();
+            if (pointerHolder != null)
+            {
+                Destroy(pointerHolder);
+            }
+        }
+
         protected override void SetPointerMaterial()
         {
             base.SetPointerMaterial();
-            pointer.GetComponent<MeshRenderer>().material = pointerMaterial;
-            pointerTip.GetComponent<MeshRenderer>().material = pointerMaterial;
+            pointer.GetComponent<Renderer>().material = pointerMaterial;
+            pointerTip.GetComponent<Renderer>().material = pointerMaterial;
         }
 
         protected override void TogglePointer(bool state)
         {
-            state = (beamAlwaysOn ? true : state);
-
+            state = (pointerVisibility == pointerVisibilityStates.Always_On ? true : state);
             base.TogglePointer(state);
             pointer.gameObject.SetActive(state);
-            bool tipState = (showPointerTip ? state : false);
+
+            var tipState = (showPointerTip ? state : false);
             pointerTip.gameObject.SetActive(tipState);
+
+            if (pointer.GetComponent<Renderer>() && pointerVisibility == pointerVisibilityStates.Always_Off)
+            {
+                pointer.GetComponent<Renderer>().enabled = false;
+            }
         }
 
         protected override void DisablePointerBeam(object sender, ControllerInteractionEventArgs e)
@@ -103,7 +121,7 @@ namespace VRTK
         private void SetPointerTransform(float setLength, float setThicknes)
         {
             //if the additional decimal isn't added then the beam position glitches
-            float beamPosition = setLength / (2 + 0.00001f);
+            var beamPosition = setLength / (2 + 0.00001f);
 
             pointer.transform.localScale = new Vector3(setThicknes, setThicknes, setLength);
             pointer.transform.localPosition = new Vector3(0f, 0f, beamPosition);
@@ -114,7 +132,7 @@ namespace VRTK
 
         private float GetPointerBeamLength(bool hasRayHit, RaycastHit collidedWith)
         {
-            float actualLength = pointerLength;
+            var actualLength = pointerLength;
 
             //reset if beam not hitting or hitting new target
             if (!hasRayHit || (pointerContactTarget && pointerContactTarget != collidedWith.transform))
