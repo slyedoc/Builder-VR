@@ -23,6 +23,11 @@ public class Rocket : MonoBehaviour, IPlay {
         EndTime = Time.time + BurnTime;
     }
 
+    public void Stop()
+    {
+        IsPlaying = false;
+    }
+
     void FixedUpdate()
     {
         if (IsPlaying && EndTime > Time.time)

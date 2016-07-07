@@ -12,7 +12,7 @@ public class ConnectionJoint : Builder_InteractableObject
     public bool DrawJoints = true;
 
     private LineRenderer line;
-
+    
     protected override void Awake()
     {
         base.Awake();
@@ -53,6 +53,8 @@ public class ConnectionJoint : Builder_InteractableObject
         joint.breakForce = float.PositiveInfinity;
 
         joints.Add(joint);
+        
+
     }
 
     public void UpdateJoint(Rigidbody target, Vector3 connectedAnchor)
@@ -63,9 +65,9 @@ public class ConnectionJoint : Builder_InteractableObject
         }        
     }
 
-    protected override void Update()
+    void Update()
     {
-        base.Update();
+
         if (DrawJoints)
         {
             line.SetVertexCount(joints.Count * 2);
@@ -80,5 +82,6 @@ public class ConnectionJoint : Builder_InteractableObject
         }
 
     }
+
 
 }
