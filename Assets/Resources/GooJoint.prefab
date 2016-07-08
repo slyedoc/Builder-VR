@@ -25,7 +25,6 @@ GameObject:
   - 23: {fileID: 23000010082299684}
   - 54: {fileID: 54000011126631314}
   - 114: {fileID: 114000011455976784}
-  - 120: {fileID: 120000012130052440}
   m_Layer: 0
   m_Name: GooJoint
   m_TagString: Untagged
@@ -40,8 +39,8 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1000011128831534}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.688, y: 0.772, z: -1.7642654}
-  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
+  m_LocalPosition: {x: -2.679, y: 1.0250001, z: -1.523}
+  m_LocalScale: {x: 0.15, y: 0.15, z: 0.15000002}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -143,46 +142,7 @@ MonoBehaviour:
     rgba: 4279900927
   DistanceMin: 0.5
   DistanceMax: 1
---- !u!120 &120000012130052440
-LineRenderer:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011128831534}
-  m_Enabled: 1
-  m_CastShadows: 1
-  m_ReceiveShadows: 1
-  m_MotionVectors: 1
-  m_LightProbeUsage: 0
-  m_ReflectionProbeUsage: 0
-  m_Materials:
-  - {fileID: 2100000, guid: cadaf4e4c09172e4b890acd89b82c9f4, type: 2}
-  m_SubsetIndices: 
-  m_StaticBatchRoot: {fileID: 0}
-  m_ProbeAnchor: {fileID: 0}
-  m_LightProbeVolumeOverride: {fileID: 0}
-  m_ScaleInLightmap: 1
-  m_PreserveUVs: 0
-  m_IgnoreNormalsForChartDetection: 0
-  m_ImportantGI: 0
-  m_SelectedWireframeHidden: 0
-  m_MinimumChartSize: 4
-  m_AutoUVMaxDistance: 0.5
-  m_AutoUVMaxAngle: 89
-  m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
-  m_Positions: []
-  m_Parameters:
-    startWidth: 1
-    endWidth: 1
-    m_StartColor:
-      serializedVersion: 2
-      rgba: 4294967295
-    m_EndColor:
-      serializedVersion: 2
-      rgba: 4294967295
-  m_UseWorldSpace: 1
+  UsingPosition: {x: 0, y: 0, z: 0}
 --- !u!135 &135000012577128680
 SphereCollider:
   m_ObjectHideFlags: 1

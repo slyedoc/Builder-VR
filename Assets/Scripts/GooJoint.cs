@@ -125,11 +125,21 @@ public class GooJoint : VRTK_InteractableObject, IPlay
         if (UsingPositionValid)
         {
             GooJoint gooJoint;
+            //if not snapped ot anything, create new joint and add as neighboor
             if (UsingPositionSnap == null)
+            {
                 gooJoint = CreateGooJoint(UsingPosition);
+                AddNeighboor(gooJoint);
+            }
             else
+            {
+                //if snapped, add if not already an neighboor                
                 gooJoint = UsingPositionSnap.GetComponent<GooJoint>();
-            AddNeighboor(gooJoint);
+                if (!neighboors.Any(a => a.GooJoint == gooJoint))
+                {
+                    AddNeighboor(gooJoint);
+                }
+            }
         }
 
         VectorLine.Destroy(ref UsingLine);
@@ -174,11 +184,21 @@ public class GooJoint : VRTK_InteractableObject, IPlay
         joint.anchor = Vector3.zero;
         joint.connectedBody = goo.GetComponent<Rigidbody>();
         joint.connectedAnchor = Vector3.zero;
-        joint.xMotion = ConfigurableJointMotion.Locked;
-        joint.yMotion = ConfigurableJointMotion.Locked;
-        joint.zMotion = ConfigurableJointMotion.Locked;
+        joint.xMotion = ConfigurableJointMotion.Limited;
+        joint.yMotion = ConfigurableJointMotion.Limited;
+        joint.zMotion = ConfigurableJointMotion.Limited;
+        joint.angularXMotion = ConfigurableJointMotion.Limited;
+        joint.angularYMotion = ConfigurableJointMotion.Limited;
+        joint.angularZMotion = ConfigurableJointMotion.Limited;
+
+
         joint.breakTorque = float.PositiveInfinity;
         joint.breakForce = float.PositiveInfinity;
+        joint.linearLimitSpring = new SoftJointLimitSpring()
+        {
+            spring = 50,
+            damper = 10
+        };
 
         goo.neighboors.Add(new GooNeighboor() { GooJoint = this });
         this.neighboors.Add(new GooNeighboor() { GooJoint = goo });
