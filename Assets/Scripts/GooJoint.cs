@@ -129,6 +129,11 @@ public class GooJoint : VRTK_InteractableObject, IPlay
             if (UsingPositionSnap == null)
             {
                 gooJoint = CreateGooJoint(UsingPosition);
+
+                var gooRb = gooJoint.GetComponent<Rigidbody>();
+                gooRb.angularDrag = 5;
+                gooRb.drag = 5;
+
                 AddNeighboor(gooJoint);
             }
             else
@@ -190,15 +195,20 @@ public class GooJoint : VRTK_InteractableObject, IPlay
         joint.angularXMotion = ConfigurableJointMotion.Limited;
         joint.angularYMotion = ConfigurableJointMotion.Limited;
         joint.angularZMotion = ConfigurableJointMotion.Limited;
+        var spring = new SoftJointLimitSpring() { damper = 1f, spring = 0 };
+        joint.angularXLimitSpring = spring;
+        joint.angularYZLimitSpring = spring;
+        joint.linearLimitSpring = spring;
+
 
 
         joint.breakTorque = float.PositiveInfinity;
         joint.breakForce = float.PositiveInfinity;
-        joint.linearLimitSpring = new SoftJointLimitSpring()
-        {
-            spring = 50,
-            damper = 10
-        };
+        //joint.linearLimitSpring = new SoftJointLimitSpring()
+        //{
+        //    spring = 50,
+        //    damper = 10
+        //};
 
         goo.neighboors.Add(new GooNeighboor() { GooJoint = this });
         this.neighboors.Add(new GooNeighboor() { GooJoint = goo });
