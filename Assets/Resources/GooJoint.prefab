@@ -21,7 +21,6 @@ GameObject:
   - 4: {fileID: 4000010478632840}
   - 33: {fileID: 33000012271816404}
   - 135: {fileID: 135000012577128680}
-  - 135: {fileID: 135000013342060188}
   - 23: {fileID: 23000010082299684}
   - 54: {fileID: 54000011126631314}
   - 114: {fileID: 114000011455976784}
@@ -151,18 +150,6 @@ SphereCollider:
   m_GameObject: {fileID: 1000011128831534}
   m_Material: {fileID: 0}
   m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!135 &135000013342060188
-SphereCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1000011128831534}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Radius: 0.5
