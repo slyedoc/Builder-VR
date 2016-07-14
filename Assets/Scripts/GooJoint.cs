@@ -129,11 +129,6 @@ public class GooJoint : VRTK_InteractableObject, IPlay
             if (UsingPositionSnap == null)
             {
                 gooJoint = CreateGooJoint(UsingPosition);
-
-                var gooRb = gooJoint.GetComponent<Rigidbody>();
-                gooRb.angularDrag = 5;
-                gooRb.drag = 5;
-
                 AddNeighboor(gooJoint);
             }
             else
@@ -184,6 +179,18 @@ public class GooJoint : VRTK_InteractableObject, IPlay
 
     public void AddNeighboor(GooJoint goo)
     {
+
+        //http://answers.unity3d.com/questions/120332/how-to-use-multiple-spring-joints-on-the-same-obje.html
+        //setup joint
+        //var go = new GameObject("Joint Child");
+        //go.transform.parent = gameObject.transform;
+        //go.transform.localPosition = Vector3.zero;
+
+
+        //var fixedJoint = gameObject.AddComponent<FixedJoint>();
+        //fixedJoint.connectedBody = rb;
+        //var joint = go.AddComponent<ConfigurableJoint>();
+
         //setup joint
         var joint = gameObject.AddComponent<ConfigurableJoint>();
         joint.anchor = Vector3.zero;
@@ -195,20 +202,20 @@ public class GooJoint : VRTK_InteractableObject, IPlay
         joint.angularXMotion = ConfigurableJointMotion.Limited;
         joint.angularYMotion = ConfigurableJointMotion.Limited;
         joint.angularZMotion = ConfigurableJointMotion.Limited;
-        var spring = new SoftJointLimitSpring() { damper = 1f, spring = 0 };
-        joint.angularXLimitSpring = spring;
-        joint.angularYZLimitSpring = spring;
+        var spring = new SoftJointLimitSpring() { damper = 100f, spring = 0 };
+        //joint.angularXLimitSpring = spring;
+        //joint.angularYZLimitSpring = spring;
         joint.linearLimitSpring = spring;
 
+
+        //var joint = go.AddComponent<FixedJoint>();
+        //joint.anchor = Vector3.zero;
+        //joint.connectedBody = goo.GetComponent<Rigidbody>();
+        //joint.connectedAnchor = Vector3.zero;
 
 
         joint.breakTorque = float.PositiveInfinity;
         joint.breakForce = float.PositiveInfinity;
-        //joint.linearLimitSpring = new SoftJointLimitSpring()
-        //{
-        //    spring = 50,
-        //    damper = 10
-        //};
 
         goo.neighboors.Add(new GooNeighboor() { GooJoint = this });
         this.neighboors.Add(new GooNeighboor() { GooJoint = goo });
